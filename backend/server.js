@@ -22,8 +22,6 @@ mongoose
 //Init Middleware 
 app.use(express.json({ extended: false}));
 
-app.get('/', (req, res) => res.send("Welcome Mukesh Prajapat"));
-
 // Use Routes
 app.use('/api/doctors', doctors);
 app.use('/api/authDoctor', authsDoctor);
@@ -32,12 +30,17 @@ app.use('/api/authUser', authsUser);
 app.use('/api/profile', profile);
 app.use('/api/appointment', appointment);
 
-app.use(express.static(path.join(__dirname,"../client/build")));
-
-app.get("*",(req,res)=>{
-    res.sendFile(path.resolve(__dirname,"../client/build/index.html"));
-});
-
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname,"client","build")));
+    app.get("*", (req, res) =>
+      res.sendFile(path.resolve(__dirname, "client","build","index.html"))
+    );
+  } else {
+    app.get("/", (req, res) => {
+      res.send("Welcome Mukesh Prajapat");
+    });
+  }
+  
 
 
 const port = process.env.PORT || 5000;
